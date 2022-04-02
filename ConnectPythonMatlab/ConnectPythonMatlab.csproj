@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="metabolic_estimation">
+      <HintPath>..\file\metabolic_estimation.dll</HintPath>
+    </Reference>
+    <Reference Include="metabolic_estimationNative">
+      <HintPath>..\file\metabolic_estimationNative.dll</HintPath>
+    </Reference>
+    <Reference Include="MWArray">
+      <HintPath>..\file\MWArray.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
