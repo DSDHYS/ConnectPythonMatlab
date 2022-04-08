@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="ConnectPythonMatlab.UserControl2"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ConnectPythonMatlab"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DockPanel x:Name="PanelWindow" Background="White">
+            <Button x:Name="ButtonStart" Content="Strat" Margin="50,30,0,0" Click="ButtonStart_Click" Height="19" VerticalAlignment="Top" HorizontalAlignment="Left" DockPanel.Dock="Top" Width="221"/>
+            <TextBox x:Name="OutString" Text="Result:" TextWrapping="Wrap" TextChanged="OutString_TextChanged" TextInput="OutString_TextInput" DockPanel.Dock="Top" Width="601" Height="320"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

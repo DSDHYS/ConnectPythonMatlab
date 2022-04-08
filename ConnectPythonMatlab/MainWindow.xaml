@@ -8,24 +8,27 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="376*"/>
         </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="ButtonStart" Content="Strat" Margin="46,31,0,0" Click="ButtonStart_Click" Height="19" VerticalAlignment="Top" HorizontalAlignment="Left" Width="221"/>
-        <TextBox x:Name="OutString" Margin="364,31,0,0" Text="Result:" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="OutString_TextChanged" TextInput="OutString_TextInput" Height="373" HorizontalAlignment="Left" Width="373"/>
-        <DockPanel LastChildFill="False" Margin="140,92,0,0" HorizontalAlignment="Left" Width="200" Height="250" VerticalAlignment="Top">
-            <Button x:Name="ButtonAddress" Content="Address" DockPanel.Dock="Top" Height="50" Click="ButtonAddress_Click"/>
-            <TextBox x:Name="PyAddressText" Text="" TextWrapping="Wrap" DockPanel.Dock="Top" Height="50" TextChanged="TextBox_TextChanged"/>
-            <TextBox x:Name="InterpreterAddressText" Text="" TextWrapping="Wrap" DockPanel.Dock="Top" Height="50"/>
-            <TextBox x:Name="FileNameText" Text="" TextWrapping="Wrap" DockPanel.Dock="Top" Height="50"/>
+        <ContentControl x:Name="ControlPage" Margin="0,27,0,0" Grid.RowSpan="2">
+            <DockPanel x:Name="PanelWindow"/>
+        </ContentControl>
+        <DockPanel Height="25" VerticalAlignment="Top">
+            <Menu DockPanel.Dock="Top" Height="25">
+                <MenuItem Header="Page">
+                    <MenuItem Header="Page1" Click="Page1Click"/>
+                    <MenuItem Header="Page2" Click="Page2Click"/>
+                </MenuItem>
+            </Menu>
         </DockPanel>
-        <DockPanel LastChildFill="False" Margin="24,142,0,0" Width="100" Height="200" VerticalAlignment="Top" HorizontalAlignment="Left">
-            <Label Content="Py文件地址：" Width="100"  Height="50" DockPanel.Dock="Top"/>
-            <Label Content="python解释器&#xD;&#xA;地址" Width="100"  Height="50" DockPanel.Dock="Top"/>
-            <Label Content="Py文件名：" DockPanel.Dock="Top" Height="50"/>
-        </DockPanel>
+
+
+
 
     </Grid>
 </Window>

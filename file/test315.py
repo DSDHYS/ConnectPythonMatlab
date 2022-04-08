@@ -5,6 +5,10 @@ Created on Tue Mar 16 15:39:15 2021
 @author: Xie
 """
 
+from cProfile import label
+from distutils.file_util import write_file
+from re import S
+
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -12,6 +16,8 @@ from tensorflow.contrib.distributions import MultivariateNormalFullCovariance
 from tensorflow.python.ops.parallel_for.gradients import jacobian
 from collections import Iterable
 import xlrd
+import xlwt
+import xlutils.copy
 
 from tensorflow.contrib.distributions import MultivariateNormalDiag
 
@@ -21,21 +27,80 @@ def flatten(items, ignore_types=(str, bytes)):
             yield from flatten(x)
         else:
             yield x
+
+
 def GetDataFromXls():
+    EnergyCost=[0]*5
     #xl = xlrd.open_workbook('D:\Doc\SofrWare\matlab_python\data.xls')
     xl = xlrd.open_workbook('data.xls')
     table = xl.sheets()[0]
-    row = table.row_values(0)
-    X = row[0]
-    Y = row[1]
-    return X,Y
+
+    for i in range(table.nrows):
+        row = table.row_values(i)
+        if(row[0]=='EnergyCost'):
+            for i in range(4):
+                EnergyCost[i]=row[i+1]
+        elif(row[0]=='μ'):
+            X = row[1]
+            Y = row[2]
+        elif(row[0]=='cov'):
+            CovCoefficient=row[1]
+        elif(row[0]=='fitness'):
+            kids=[0]*12
+            for i in range(11):
+                kids[i]=row[i+1]
+            kids=np.array(kids)
+            kids=kids.reshape(6,2)
+            #kids=np.array([[row[1],row[2]],[row[3],row[4]],[row[5],row[6]],[row[7],row[8]],[row[9],row[10]],[row[11],row[12]]])
+
+
+    # row = table.row_values(0)
+    # X = row[1]
+    # Y = row[2]
+
+    # row = table.row_values(1)
+    # CovCoefficient=row[1]
+    
+    # row = table.row_values(2)
+    # for i in range(4):
+    #     EnergyCost[i]=row[i+1]
+    # #print(X,Y,CovCoefficient,"!!!")
+    return X,Y,CovCoefficient,EnergyCost,kids
+def WriteFile(MiuX,MiuY):
+    data = xlrd.open_workbook('data.xls')
+    ws=xlutils.copy.copy(data)
+    table = ws.get_sheet(0)
+    #NowRows=readline()
+    table.write(4,1,label=f"{MiuX}")
+    table.write(4,2,label=f"{MiuY}")
+    #print(NowRows)
+    ws.save('data.xls')
+
+def readline():
+    sheet1=(xlrd.open_workbook('data.xls',formatting_info=True)).sheet_by_index(0)
+    nrows=sheet1.nrows
+    ncols=sheet1.ncols
+
+    return nrows
+    
+    # file=xlwt.Workbook(encoding='utf-8')
+    # table=file.add_sheet('Sheet1',cell_overwrite_ok=True)
+    # table.write(4,1,'DSD')
+    # file.save('data.xls')
+    # print('!!!')
+    
+
+
+
 
 
 DNA_SIZE = 2         # parameter (solution) number
 N_POP = 6          # population size
 N_GENERATION = 6   # training step
 LR = 0.02            # learning rate
-
+MiuLr=0.001
+CovLr=0.008
+#kids=np.array([[0,1],[1,1],[1,1],[1,1],[1,1],[1,1]])
 # MuX=0.75
 # MuY=0.75
 
@@ -43,8 +108,8 @@ LR = 0.02            # learning rate
 # fitness function
 def get_fitness(pred):
     fitness=-(5*(pred[:, 0])**2 +5*( pred[:, 1])**2)
-    print (pred)
-    print (fitness)
+    # print (pred)
+    # print (fitness)
     # xl=xlrd.open_workbook('D:\Doc\SofrWare\matlab_python\data.xlsx')
     # table=xl.sheets()[0]
     # row=table.row_values(0)
@@ -54,11 +119,12 @@ def get_fitness(pred):
 # build multivariate distribution
 
 #Read data from xls
-(MuX,MuY)=GetDataFromXls()
+(MuX,MuY,CovCoefficient,EnergyCost,kids)=GetDataFromXls()
 #notes
 
+
 mean = tf.Variable([MuX,MuY], dtype=tf.float32)
-cov = tf.Variable(1. * tf.eye(DNA_SIZE), dtype=tf.float32)
+cov = tf.Variable(CovCoefficient * tf.eye(DNA_SIZE), dtype=tf.float32)
 mvn = MultivariateNormalFullCovariance(loc=mean, covariance_matrix=cov)
 make_kid = mvn.sample(N_POP)                                    # sampling operation
 
@@ -111,9 +177,14 @@ plt.ion()
 
 # training
 for g in range(N_GENERATION):
-    kids = sess.run(make_kid)
-    #print(kids)
-    kids_fit = get_fitness(kids)
+    if(g==0):
+        kids_fit = get_fitness(kids)
+    else:
+        kids = sess.run(make_kid)
+        #print(kids)
+        kids_fit = get_fitness(kids)
+
+
     #print(sess.run(d_ux,{tfkids_fit: kids_fit, tfkids: kids}))
 
     #sess.run(train_op, {tfkids_fit: kids_fit, tfkids: kids})    # update distribution parameters
@@ -181,8 +252,9 @@ for g in range(N_GENERATION):
     mean_o=np.array(sess.run(mean))
     cov_o=np.array(sess.run(cov))
     #print(sess.run(mean))
-    mean_value=(np.array(sess.run(mean))+(0.008*xita[0:2]).flatten())
-    cov_value=(np.array(sess.run(cov))+(0.001*xita[2:6]).reshape(2,2))
+
+    mean_value=(np.array(sess.run(mean))+(MiuLr*xita[0:2]).flatten())
+    cov_value=(np.array(sess.run(cov))+(CovLr*xita[2:6]).reshape(2,2))
     #print(sess.run(mean))
     #print(sess.run(cov))
     #print("B")
@@ -191,7 +263,11 @@ for g in range(N_GENERATION):
     #print(mean_value)
     sess.run(mean_update,{mean_new:mean_value})
     sess.run(cov_update,{cov_new:cov_value})
+    ResultMean=sess.run(mean)
+ 
     print(sess.run(mean))
+
+
     #print(sess.run(cov))
     #print(" C ")
     print("Parameters are successfully updated!")
@@ -219,3 +295,8 @@ for g in range(N_GENERATION):
 
 print('Finished'); plt.ioff(); plt.show()
 '''
+
+WriteFile(MiuX=sess.run(mean)[0],MiuY=sess.run(mean)[1])
+
+
+
