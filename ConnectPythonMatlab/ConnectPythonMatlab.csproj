@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="Library">
+      <HintPath>..\..\..\..\C#Library\Library\Library\bin\Debug\net5.0\Library.dll</HintPath>
+    </Reference>
     <Reference Include="metabolic_estimation">
       <HintPath>..\file\metabolic_estimation.dll</HintPath>
     </Reference>
